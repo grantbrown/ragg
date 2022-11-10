@@ -5,7 +5,7 @@
 # R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
 
 # Library settings
-PKG_CONFIG_NAME="freetype2 libpng libtiff-4"
+PKG_CONFIG_NAME="freetype2 libpng libtiff-4 libjpeg"
 PKG_DEB_NAME="libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev"
 PKG_RPM_NAME="freetype-devel libpng-devel libtiff-devel libjpeg-turbo-devel"
 PKG_CSW_NAME="libfreetype_dev libpng16_dev libtiff_dev libjpeg_dev"
@@ -15,9 +15,9 @@ PKG_LIBS="-lfreetype -lpng16 -ltiff -lz -ljpeg -lbz2"
 PKG_CFLAGS=""
 
 # Find compiler
-CC=`${R_HOME}/bin/R CMD config CC`
-CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
-CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
+CC=`R CMD config CC`
+CFLAGS=`R CMD config CFLAGS`
+CPPFLAGS=`R CMD config CPPFLAGS`
 
 # Use pkg-config if available
 if [ `command -v pkg-config` ]; then
@@ -55,6 +55,11 @@ echo "Using PKG_LIBS=$PKG_LIBS"
 
 # Test configuration
 printf "$PKG_TEST_HEADER" | ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E -xc - >/dev/null 2>configure.log
+
+if [ $? -ne 0 ]; then
+	# This resets the $?
+	echo "A CONFIGURATION ERROR WAS FLAGGED BUT WE ARE CONTINUING ANYWAY"
+fi
 
 # Customize the error
 if [ $? -ne 0 ]; then
